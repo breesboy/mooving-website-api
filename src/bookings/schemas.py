@@ -11,6 +11,7 @@ class Bookings(BaseModel):
 	moving_date: date
 	description : str
 	status : str
+	# agreed_price : float
 	created_at : datetime
 	updated_at : datetime
 
@@ -29,6 +30,7 @@ class UpdateBooking(BaseModel):
 	moving_date: datetime
 	description : str
 	status : str
+	# agreed_price : float
 
 
 class RescheduleBooking(BaseModel):

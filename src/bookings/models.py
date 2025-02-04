@@ -2,6 +2,7 @@ from sqlmodel import SQLModel,Field,Column
 import sqlalchemy.dialects.postgresql as pg
 from datetime import datetime
 import uuid
+# from typing import Optional
 
 
 class Bookings(SQLModel, table=True):
@@ -20,9 +21,9 @@ class Bookings(SQLModel, table=True):
 	moving_date: datetime = Field(Column(pg.TIMESTAMP))
 	description : str
 	status : str
+	# agreed_price : Optional[float] = Field(sa_column=Column(pg.FLOAT, nullable=True, default=0))
 	created_at : datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 	updated_at : datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
-
 
 
 	def __repr__(self):
