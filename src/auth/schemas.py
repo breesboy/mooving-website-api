@@ -4,16 +4,16 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from src.books.schemas import Book
-from src.reviews.schemas import ReviewModel
+# from src.books.schemas import Book
+# from src.reviews.schemas import ReviewModel
 
 
 class UserCreateModel(BaseModel):
     first_name: str = Field(max_length=25)
     last_name: str = Field(max_length=25)
-    username: str = Field(max_length=8)
+    username: str = Field(max_length=25)
     email: str = Field(max_length=40)
-    password: str = Field(min_length=6)
+    password: str = Field(min_length=8)
 
     model_config = {
         "json_schema_extra": {
@@ -40,9 +40,9 @@ class UserModel(BaseModel):
     update_at: datetime
 
 
-class UserBooksModel(UserModel):
-    books: List[Book]
-    reviews: List[ReviewModel]
+# class UserBooksModel(UserModel):
+#     books: List[Book]
+#     reviews: List[ReviewModel]
 
 
 class UserLoginModel(BaseModel):
