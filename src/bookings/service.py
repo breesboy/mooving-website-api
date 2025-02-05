@@ -13,7 +13,7 @@ class BookingService:
 			**bookings_data_dict
 		)
 
-		new_booking.moving_date = datetime.strptime(bookings_data_dict['moving_date'],"%Y-%m-%d")
+		new_booking.moving_date = datetime.strptime(bookings_data_dict['moving_date'],"%d-%m-%Y")
 
 		session.add(new_booking)
 
@@ -50,6 +50,7 @@ class BookingService:
 
 		for k, v in booking_update_dict.items():
 			setattr(booking_to_update,k,v)
+
 
 		await session.commit()
 
