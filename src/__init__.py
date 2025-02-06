@@ -21,6 +21,7 @@ origins = [
     "http://localhost:3000",  # If you're calling from a frontend like React/Next.js
     "http://127.0.0.1:3000",
     "http://192.168.1.72:5173",
+    "http://localhost:5173",
     "https://yourfrontenddomain.com",  # Add your production frontend domain
 ]
 
