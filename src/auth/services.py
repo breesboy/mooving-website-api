@@ -13,12 +13,26 @@ class UserService:
 		user = result.first()
 
 		return user
+	
+	async def get_user_by_username(self, username : str, session : AsyncSession):
+		statement = select(User).where(User.username == username)
 
-	async def user_exists(self, email : str, session : AsyncSession):
+		result = await session.exec(statement)
+
+		user = result.first()
+
+		return user
+
+	async def email_exists(self, email : str, session : AsyncSession):
 		user = await self.get_user_by_email(email, session)
 
 		return True if user is not None else False
+	
+	async def username_exists(self, username : str, session : AsyncSession):
+		user = await self.get_user_by_username(username, session)
 
+		return True if user is not None else False
+	
 
 	async def create_user_Account(self, user_data: UserCreateModel, session: AsyncSession):
 		user_data_dict = user_data.model_dump()
@@ -35,3 +49,10 @@ class UserService:
 
 		return new_user
 
+
+	async def get_all_users(self, session : AsyncSession):
+			statement = select(User)
+
+			result = await session.exec(statement)
+
+			return result.all()

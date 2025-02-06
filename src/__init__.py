@@ -18,4 +18,4 @@ app = FastAPI(
 app.include_router(booking_router,prefix=f"/api/{version}/bookings", tags=["Bookings"])
 
 
-# app.include_router(auth_router,prefix=f"/api/{version}/auth", tags=["Auth"])
+app.include_router(auth_router,prefix=f"/api/{version}/auth", tags=["Auth"])

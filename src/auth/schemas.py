@@ -4,10 +4,6 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-# from src.books.schemas import Book
-# from src.reviews.schemas import ReviewModel
-
-
 class UserCreateModel(BaseModel):
     first_name: str = Field(max_length=25)
     last_name: str = Field(max_length=25)
@@ -36,8 +32,6 @@ class UserModel(BaseModel):
     last_name: str
     is_verified: bool
     password_hash: str = Field(exclude=True)
-    created_at: datetime
-    update_at: datetime
 
 
 # class UserBooksModel(UserModel):
@@ -50,14 +44,14 @@ class UserLoginModel(BaseModel):
     password: str = Field(min_length=6)
 
 
-class EmailModel(BaseModel):
-    addresses : List[str]
+# class EmailModel(BaseModel):
+#     addresses : List[str]
 
 
-class PasswordResetRequestModel(BaseModel):
-    email: str
+# class PasswordResetRequestModel(BaseModel):
+#     email: str
 
 
-class PasswordResetConfirmModel(BaseModel):
-    new_password: str
-    confirm_new_password: str
+# class PasswordResetConfirmModel(BaseModel):
+#     new_password: str
+#     confirm_new_password: str
