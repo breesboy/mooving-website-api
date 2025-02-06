@@ -1,5 +1,5 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from .schemas import CreateBooking,UpdateBooking,RescheduleBooking,UpdateBookingStatus
+from .schemas import CreateBooking,UpdateBooking,RescheduleBooking,UpdateBookingStatus,AddPayment
 from sqlmodel import select,desc
 from .models import Bookings
 from datetime import datetime
@@ -14,6 +14,7 @@ class BookingService:
 		)
 
 		new_booking.moving_date = datetime.strptime(bookings_data_dict['moving_date'],"%d-%m-%Y")
+		new_booking.status = "Pending"
 
 		session.add(new_booking)
 
@@ -35,10 +36,6 @@ class BookingService:
 		result = await session.exec(statement)
 
 		return result.first()
-
-
-	async def mark_booking_as_complete(self,booking_uid : str, session: AsyncSession):
-		pass
 
 
 	async def update_booking(self, booking_uid : str, update_data : UpdateBooking, session: AsyncSession):
@@ -87,6 +84,25 @@ class BookingService:
 		await session.commit()
 
 		return booking_status_change
+
+
+	async def agreed_price(self, booking_uid : str, agreed_price_data:AddPayment, session: AsyncSession):
+		booking_price = await self.get_booking(booking_uid,session)
+
+
+		if booking_price is None:
+			return None
+
+
+		booking_booking_price_dict = agreed_price_data.model_dump()
+
+		for k, v in booking_booking_price_dict.items():
+			setattr(booking_price,k,v)
+
+		await session.commit()
+
+		return booking_price
+
 
 
 	async def cancel_booking(self, booking_uid : str, session: AsyncSession):

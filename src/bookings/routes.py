@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from src.bookings.schemas import Bookings, UpdateBooking,CreateBooking,UpdateBookingStatus,RescheduleBooking
+from src.bookings.schemas import Bookings, UpdateBooking,CreateBooking,UpdateBookingStatus,RescheduleBooking,AddPayment
 from src.db.main import get_session
 from .service import BookingService
 from src.auth.dependencies import AccessTokenBearer
@@ -72,6 +72,18 @@ async def update_booking_status(booking_uid:str, booking_status_data: UpdateBook
 
 	else:
 		return booking_status
+
+
+@booking_router.patch("/booking_agreed_price/{booking_uid}")
+async def add_booking_agreed_price(booking_uid:str, booking_price_data: AddPayment, session:AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)) -> dict:
+	booking_price = await booking_service.agreed_price(booking_uid,booking_price_data,session)
+
+	if booking_price is None:
+		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Booking not found")
+
+	else:
+		return booking_price
+
 
 
 @booking_router.patch("/cancel_booking/{booking_uid}", response_model=Bookings)

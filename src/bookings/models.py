@@ -25,8 +25,8 @@ class Bookings(SQLModel, table=True):
 	moving_date: datetime = Field(Column(pg.TIMESTAMP))
 	description : str
 	service : str
-	status : str
-	agreed_price : Optional[float]
+	status : Optional[str] = "Pending"
+	agreedPrice: Optional[str] = "0"
 	created_at : datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 	updated_at : datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
 

@@ -16,7 +16,7 @@ class Bookings(BaseModel):
 	service : str
 	description : str
 	status : str
-	# agreed_price : float
+	agreedPrice: str
 	created_at : datetime
 	updated_at : datetime
 
@@ -30,8 +30,8 @@ class CreateBooking(BaseModel):
 	dropoff_address : str
 	moving_date: str
 	service : str
-	description : str
 	status : str
+	description : str
 
 
 class UpdateBooking(BaseModel):
@@ -42,9 +42,7 @@ class UpdateBooking(BaseModel):
 	dropoff_address : str
 	moving_date: date
 	description : str
-	status : str
 	service : str
-	# agreed_price : float
 
 
 class RescheduleBooking(BaseModel):
@@ -53,3 +51,6 @@ class RescheduleBooking(BaseModel):
 
 class UpdateBookingStatus(BaseModel):
 	status: str
+
+class AddPayment(BaseModel):
+	agreedPrice: str
