@@ -87,21 +87,16 @@ class BookingService:
 
 
 	async def agreed_price(self, booking_uid : str, agreed_price_data:AddPayment, session: AsyncSession):
-		booking_price = await self.get_booking(booking_uid,session)
+		booking_to_charge = await self.get_booking(booking_uid,session)
 
+		booking_to_charge_dict = agreed_price_data.model_dump()
 
-		if booking_price is None:
-			return None
-
-
-		booking_booking_price_dict = agreed_price_data.model_dump()
-
-		for k, v in booking_booking_price_dict.items():
-			setattr(booking_price,k,v)
+		for k, v in booking_to_charge_dict.items():
+			setattr(booking_to_charge,k,v)
 
 		await session.commit()
 
-		return booking_price
+		return booking_to_charge
 
 
 

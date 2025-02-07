@@ -63,7 +63,7 @@ async def reschedule_booking(booking_uid:str, reschedule_booking_data: Reschedul
 	else:
 		return reschedule_booking
 
-@booking_router.patch("/booking_status/{booking_uid}")
+@booking_router.patch("/booking_status/{booking_uid}", response_model=Bookings)
 async def update_booking_status(booking_uid:str, booking_status_data: UpdateBookingStatus, session:AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)) -> dict:
 	booking_status = await booking_service.booking_status(booking_uid,booking_status_data,session)
 
@@ -74,15 +74,16 @@ async def update_booking_status(booking_uid:str, booking_status_data: UpdateBook
 		return booking_status
 
 
-@booking_router.patch("/booking_agreed_price/{booking_uid}")
-async def add_booking_agreed_price(booking_uid:str, booking_price_data: AddPayment, session:AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)) -> dict:
-	booking_price = await booking_service.agreed_price(booking_uid,booking_price_data,session)
+@booking_router.patch("/add_papment/{booking_uid}", response_model=Bookings)
+async def add_agreed_price(booking_uid:str, agreed_price_data: AddPayment, session:AsyncSession = Depends(get_session),user_details=Depends(access_token_bearer)) -> dict:
+	agreed_price = await booking_service.agreed_price(booking_uid,agreed_price_data,session)
 
-	if booking_price is None:
+	if agreed_price is None:
 		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Booking not found")
 
 	else:
-		return booking_price
+		return agreed_price
+
 
 
 
