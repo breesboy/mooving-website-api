@@ -42,6 +42,10 @@ class UserModel(BaseModel):
 class CurrentUser(BaseModel):
     email: str
     username: str
+    first_name: str
+    last_name: str
+    is_verified: bool
+
 
 
 class UserLoginModel(BaseModel):
