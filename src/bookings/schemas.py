@@ -30,7 +30,6 @@ class CreateBooking(BaseModel):
 	dropoff_address : str
 	moving_date: str
 	service : str
-	status : str
 	description : str
 
 
