@@ -8,7 +8,8 @@ from typing import List
 from .utils import create_access_token, decode_token, verify_password
 from datetime import timedelta,datetime
 from fastapi.responses import JSONResponse
-from .dependencies import RefreshTokenBearer, get_current_user
+from .dependencies import RefreshTokenBearer,AccessTokenBearer, get_current_user
+from src.db.redis import add_jti_to_blocklist
 
 
 auth_router = APIRouter()
@@ -95,6 +96,19 @@ async def login_user(login_data:UserLoginModel, session: AsyncSession = Depends(
 	raise HTTPException(
 		status_code=status.HTTP_403_FORBIDDEN,
 		detail="Invalid email or password"
+	)
+
+@auth_router.post("/logout")
+async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
+	jti = token_details['jti']
+
+	await add_jti_to_blocklist(jti)
+
+	return JSONResponse(
+		content={
+			"message": "Loggout successfully"
+		},
+		status_code=status.HTTP_200_OK
 	)
 
 
