@@ -5,7 +5,7 @@ import uuid
 
 
 class User(SQLModel, table=True):
-	__tablename__ = "users"
+	__tablename__ = "invoices"
 
 	uid : uuid.UUID = Field(
 		sa_column= Column(
@@ -15,15 +15,12 @@ class User(SQLModel, table=True):
 			default=uuid.uuid4
 		)
 	)
-	username : str
-	email : str
-	first_name: str
-	last_name : str
-	role : str = Field(
-		sa_column=Column(pg.VARCHAR, nullable=False, server_default="user")
-	)
-	is_verified : bool = Field(default=False)
-	password_hash : str = Field(exclude=True)
+	booking_uid : uuid.UUID = Field(foreign_key="users.uid", ondelete="SET NULL")
+	stripe_invoice_id : uuid.UUID
+	amount : float
+	status: str
+	issued_at : datetime = Field(default_factory=datetime.now)
+	paid_at : datetime = Field(default=None, nullable=True)
 
 
 	def __repr__(self):

@@ -7,6 +7,8 @@ from fastapi import Depends
 from src.db.main import get_session
 from .services import UserService
 from src.db.redis import token_blocklist,token_in_blocklist
+from typing import Any, List
+from .models import User
 
 
 user_service = UserService()
@@ -69,3 +71,23 @@ async def get_current_user(
     user = await user_service.get_user_by_email(user_email, session)
 
     return user
+
+
+class RoleChecker:
+    def __init__(self, allowed_roles: List[str]) -> None:
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user: User = Depends(get_current_user)) -> Any:
+        if not current_user.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account not verified. Check your email for verification link"
+            )
+
+        if current_user.role in self.allowed_roles:
+            return True
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permission"
+        )

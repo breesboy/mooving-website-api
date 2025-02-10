@@ -42,6 +42,7 @@ class UserService:
 		)
 
 		new_user.password_hash = generate_passwd_hash(user_data_dict['password'])
+		new_user.role = 'user'
 
 		session.add(new_user)
 
@@ -56,3 +57,12 @@ class UserService:
 			result = await session.exec(statement)
 
 			return result.all()
+	
+
+	async def update_user(self, user:User, user_data: dict, session: AsyncSession):
+		
+		for k, v in user_data.items():
+			setattr(user, k, v)
+
+		await session.commit()
+		return user

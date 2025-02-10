@@ -27,7 +27,20 @@ class BookingService:
 
 		result = await session.exec(statement)
 
-		return result.all()
+		result = result.all()
+
+		return result
+
+
+	async def get_user_bookings(self,user_uid : str, session: AsyncSession):
+		statement = select(Bookings).where(Bookings.user_uid == user_uid)
+
+		result = await session.exec(statement)
+
+		result = result.all()
+		
+		return result
+
 
 
 	async def get_booking(self,booking_uid : str, session: AsyncSession):
@@ -40,8 +53,6 @@ class BookingService:
 
 	async def update_booking(self, booking_uid : str, update_data : UpdateBooking, session: AsyncSession):
 		booking_to_update = await self.get_booking(booking_uid,session)
-
-
 
 		booking_update_dict = update_data.model_dump()
 

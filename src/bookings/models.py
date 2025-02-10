@@ -25,6 +25,7 @@ class Bookings(SQLModel, table=True):
 	moving_date: datetime = Field(Column(pg.TIMESTAMP))
 	description : str
 	service : str
+	user_uid : Optional[uuid.UUID] = Field(default=None, foreign_key="users.uid",  nullable=True, ondelete="SET NULL")
 	status : Optional[str] = "Pending"
 	agreedPrice: Optional[str] = "0"
 	created_at : datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))

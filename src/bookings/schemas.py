@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import uuid
 from datetime import datetime,date
+from typing import Optional
 
 
 
@@ -17,6 +18,7 @@ class Bookings(BaseModel):
 	description : str
 	status : str
 	agreedPrice: str
+	user_uid : Optional[uuid.UUID]
 	created_at : datetime
 	updated_at : datetime
 
