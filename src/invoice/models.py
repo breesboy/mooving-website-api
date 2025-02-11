@@ -4,7 +4,7 @@ from datetime import datetime
 import uuid
 
 
-class User(SQLModel, table=True):
+class Invoice(SQLModel, table=True):
 	__tablename__ = "invoices"
 
 	uid : uuid.UUID = Field(
@@ -15,8 +15,8 @@ class User(SQLModel, table=True):
 			default=uuid.uuid4
 		)
 	)
-	booking_uid : uuid.UUID = Field(foreign_key="users.uid", ondelete="SET NULL")
-	stripe_invoice_id : uuid.UUID
+	booking_uid : uuid.UUID = Field(foreign_key="bookings.uid",nullable=False)
+	stripe_invoice_id : str
 	amount : float
 	status: str
 	issued_at : datetime = Field(default_factory=datetime.now)
@@ -24,4 +24,4 @@ class User(SQLModel, table=True):
 
 
 	def __repr__(self):
-		return f"<User {self.username}>"
+		return f"<Invoice of {self.booking_uid} for {self.amount}>"

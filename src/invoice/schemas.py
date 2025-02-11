@@ -2,71 +2,58 @@ import uuid
 from datetime import datetime
 from typing import List
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel
 
-class UserCreateModel(BaseModel):
-    first_name: str = Field(max_length=25)
-    last_name: str = Field(max_length=25)
-    username: str = Field(max_length=25)
-    email: str = Field(max_length=40)
-    password: str = Field(min_length=8)
+class InvoiceRequestModel(BaseModel):
+    booking_uid: uuid.UUID
+    amount: float
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "first_name": "John",
-                "last_name": "Doe",
-                "username": "johndoe",
-                "email": "johndoe123@co.com",
-                "password": "testpass123",
+                "amount": 99.99,
+                "booking_uid": "123e4567-e89b-12d3-a456-426614174001"
             }
         }
     }
 
+class InvoiceCreateModel(BaseModel):
+    booking_uid: uuid.UUID
+    stripe_invoice_id: str
+    amount: float
+    status: str
 
-class UserModel(BaseModel):
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "booking_uid": "123e4567-e89b-12d3-a456-426614174001",
+                "stripe_invoice_id": "in_1234567890",
+                "amount": 99.99,
+                "status": "pending"
+            }
+        }
+    }
+
+class InvoiceModel(BaseModel):
     uid: uuid.UUID
-    username: str
-    email: str
-    first_name: str
-    last_name: str
-    role : str
-    is_verified: bool
-    password_hash: str = Field(exclude=True)
+    booking_uid: uuid.UUID
+    stripe_invoice_id: str
+    amount: float
+    status: str
+    issued_at: datetime
+    paid_at: datetime | None = None
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "uid": "123e4567-e89b-12d3-a456-426614174000",
+                "booking_uid": "123e4567-e89b-12d3-a456-426614174001",
+                "stripe_invoice_id": "in_1234567890",
+                "amount": 99.99,
+                "status": "pending",
+                "issued_at": "2023-01-01T00:00:00Z",
+                "paid_at": None
+            }
+        }
+    }
 
-# class UserBooksModel(UserModel):
-#     books: List[Book]
-#     reviews: List[ReviewModel]
-
-
-class CurrentUser(BaseModel):
-    uid: uuid.UUID
-    email: str
-    username: str
-    first_name: str
-    last_name: str
-    role : str
-    is_verified: bool
-
-
-
-class UserLoginModel(BaseModel):
-    email: str = Field(max_length=40)
-    password: str = Field(min_length=6)
-
-
-class EmailModel(BaseModel):
-    addresses : List[str]
-
-class EmailSchema(BaseModel):
-    email: str
-    name: str
-    verification_link: str
-
-class PasswordResetRequestModel(BaseModel):
-    email: str
-
-
-class PasswordResetConfirmModel(BaseModel):
-    new_password: str

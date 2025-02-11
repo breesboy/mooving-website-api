@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from src.bookings.routes import booking_router
+from src.invoice.routes import invoice_router
 from src.db.main import init_db
 from src.auth.routes import auth_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,3 +39,6 @@ app.include_router(booking_router,prefix=f"/api/{version}/bookings", tags=["Book
 
 
 app.include_router(auth_router,prefix=f"/api/{version}/auth", tags=["Auth"])
+
+
+app.include_router(invoice_router,prefix=f"/api/{version}/invoices", tags=["Invoices"])
