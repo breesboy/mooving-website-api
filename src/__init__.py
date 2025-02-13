@@ -23,6 +23,9 @@ origins = [
     "http://127.0.0.1:3000",
     "http://192.168.1.72:5173",
     "http://localhost:5173",
+    "https://blackbrosdelivery.ca",
+    "https://www.blackbrosdelivery.ca",
+    "https://api.blackbrosdelivery.ca/",
     "https://yourfrontenddomain.com",  # Add your production frontend domain
 ]
 
