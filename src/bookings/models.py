@@ -26,7 +26,6 @@ class Bookings(SQLModel, table=True):
 	description : str
 	service : str
 	user_uid : Optional[uuid.UUID] = Field(default=None, foreign_key="users.uid",  nullable=True, ondelete="SET NULL")
-	client_email : str 
 	status : Optional[str] = "Pending"
 	agreedPrice: Optional[str] = "0"
 	created_at : datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))

@@ -19,7 +19,6 @@ class Bookings(BaseModel):
 	status : str
 	agreedPrice: str
 	user_uid : Optional[uuid.UUID]
-	client_email : str
 	created_at : datetime
 	updated_at : datetime
 
@@ -34,7 +33,6 @@ class CreateBooking(BaseModel):
 	moving_date: str
 	service : str
 	description : str
-	client_email : str
 
 
 class UpdateBooking(BaseModel):

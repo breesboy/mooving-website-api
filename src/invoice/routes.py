@@ -17,7 +17,7 @@ invoice_service = InvoiceService()
 invoice_router = APIRouter()
 booking_service = BookingService()
 
-STRIPE_SECRET_KEY = "sk_test_51Qn7AHKV2WDEhDAhp0Ksth6o12EiHJOHQb5E1smgkinRrNfTWRyRoJ9Ye63y5cgLr1Vg7XLa8DCPsNKOMpyHbUQr00c0dOS1uX"
+STRIPE_SECRET_KEY = Config.STRIPE_SECRET_KEY #"sk_test_51Qn7AHKV2WDEhDAhp0Ksth6o12EiHJOHQb5E1smgkinRrNfTWRyRoJ9Ye63y5cgLr1Vg7XLa8DCPsNKOMpyHbUQr00c0dOS1uX"
 stripe.api_key = STRIPE_SECRET_KEY
 
 admin_role_checker = RoleChecker(['admin'])
@@ -38,7 +38,7 @@ async def create_invoice(invoice_data: InvoiceRequestModel, session: AsyncSessio
     if booking is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Booking not found")
 
-    if not booking.client_email:
+    if not booking.email:
         raise HTTPException(status_code=400, detail="Client email is required for invoicing")
 
     # Check for valid invoice amount
@@ -46,14 +46,14 @@ async def create_invoice(invoice_data: InvoiceRequestModel, session: AsyncSessio
         raise HTTPException(status_code=400, detail="Invoice amount must be greater than zero")
 
     # Step 1: Check if Customer Already Exists in Stripe
-    existing_customers = stripe.Customer.list(email=booking.client_email).get("data", [])
-
+    existing_customers = stripe.Customer.list(email=booking.email).get("data", [])
+    client_name = booking.firstName + " " + booking.lastName
     if existing_customers:
         customer_id = existing_customers[0]["id"]  # Use existing customer ID
     else:
         customer = stripe.Customer.create(
-            email=booking.client_email,
-            name="Unregistered Client"
+            email=booking.email,
+            name=client_name
         )
         customer_id = customer.id
 
@@ -61,7 +61,7 @@ async def create_invoice(invoice_data: InvoiceRequestModel, session: AsyncSessio
     stripe_invoice = stripe.Invoice.create(
         customer=customer_id,
         collection_method="send_invoice",
-        days_until_due=7  # Invoice is due in 7 days
+        days_until_due=1  # Invoice is due in 7 days
     )
 
     # Step 3: Create a Stripe Invoice Item (This must be linked to the same customer & invoice)
@@ -69,7 +69,7 @@ async def create_invoice(invoice_data: InvoiceRequestModel, session: AsyncSessio
         customer=customer_id,
         invoice=stripe_invoice.id,  # Explicitly attach to the created invoice
         amount=int(invoice_data.amount * 100),  # Convert dollars to cents
-        currency="usd",
+        currency="cad",
         description=f"Invoice for Booking #{booking.uid}"
     )
 
