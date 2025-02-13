@@ -13,7 +13,7 @@ class BookingService:
 			**bookings_data_dict
 		)
 
-		new_booking.moving_date = datetime.strptime(bookings_data_dict['moving_date'],"%d-%m-%Y")
+		new_booking.moving_date = datetime.strptime(bookings_data_dict['moving_date'],"%m-%d-%Y")
 		new_booking.status = "Pending"
 
 		session.add(new_booking)
