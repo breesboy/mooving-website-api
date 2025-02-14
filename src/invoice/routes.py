@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from fastapi.exceptions import HTTPException
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.bookings.service import BookingService
@@ -17,7 +17,8 @@ invoice_service = InvoiceService()
 invoice_router = APIRouter()
 booking_service = BookingService()
 
-STRIPE_SECRET_KEY = Config.STRIPE_SECRET_KEY #"sk_test_51Qn7AHKV2WDEhDAhp0Ksth6o12EiHJOHQb5E1smgkinRrNfTWRyRoJ9Ye63y5cgLr1Vg7XLa8DCPsNKOMpyHbUQr00c0dOS1uX"
+STRIPE_SECRET_KEY = Config.STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET = Config.STRIPE_WEBHOOK_SECRET
 stripe.api_key = STRIPE_SECRET_KEY
 
 admin_role_checker = RoleChecker(['admin'])
@@ -93,3 +94,41 @@ async def create_invoice(invoice_data: InvoiceRequestModel, session: AsyncSessio
             "status": "unpaid",
             "stripe_invoice_url": finalized_invoice.hosted_invoice_url
         }
+
+
+@invoice_router.post("/webhooks/stripe")
+async def stripe_webhook(request: Request, session: AsyncSession = Depends(get_session)):
+    payload = await request.body()
+    sig_header = request.headers.get("Stripe-Signature")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        )
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid payload")
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    # Handle "invoice.paid" event
+    if event["type"] == "invoice.paid":
+        invoice_data = event["data"]["object"]
+        invoice_id = invoice_data["id"]
+        
+        # Find invoice in DB
+        invoice = await invoice_service.get_invoice_by_id(invoice_id,session)
+        if not invoice:
+            raise HTTPException(status_code=404, detail="Invoice not found in database")
+
+        # Update invoice status
+        invoice_status = "paid"
+        invoice_paid_at = invoice_data["status_transitions"]["paid_at"]
+        await invoice_service.update_invoice(invoice, {"status": invoice_status}, session)
+        await invoice_service.update_invoice(invoice, {"paid_at": invoice_paid_at}, session)
+
+        # Update booking status to "confirmed"
+        booking_uid = invoice.booking_id
+        booking = await booking_service.get_booking(booking_uid,session)
+        await booking_service.quick_update_booking(booking, {"status": "confirmed"}, session)
+        
+    return {"status": "success"}

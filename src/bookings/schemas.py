@@ -11,7 +11,7 @@ class Bookings(BaseModel):
 	lastName : str
 	email : str
 	phoneNumber : str
-	pickup_address : str
+	pickup_address : Optional[str]
 	dropoff_address : str
 	moving_date: date
 	service : str
@@ -28,7 +28,7 @@ class CreateBooking(BaseModel):
 	lastName : str
 	email : str
 	phoneNumber : str
-	pickup_address : str
+	pickup_address : Optional[str] = None
 	dropoff_address : str
 	moving_date: str
 	service : str
@@ -39,7 +39,7 @@ class UpdateBooking(BaseModel):
 	firstName : str
 	lastName : str
 	phoneNumber : str
-	pickup_address : str
+	pickup_address : Optional[str]
 	dropoff_address : str
 	moving_date: date
 	description : str

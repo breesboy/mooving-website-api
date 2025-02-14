@@ -126,7 +126,15 @@ class BookingService:
 
 		return booking_cancel_dict
 
+	
 
+	async def quick_update_booking(self, booking:Bookings, booking_data: dict, session: AsyncSession):
+		
+		for k, v in booking_data.items():
+			setattr(booking, k, v)
+
+		await session.commit()
+		return booking
 
 
 
